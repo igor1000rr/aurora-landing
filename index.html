@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aurora — AI-платформа нового поколения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06060a;
+  --bg-2:#0b0b14;
+  --surface:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.08);
+  --text:#f5f5fa;
+  --muted:#9a9ab0;
+  --accent-1:#7c3aed;
+  --accent-2:#22d3ee;
+  --accent-3:#ec4899;
+  --gradient:linear-gradient(135deg,#7c3aed 0%,#22d3ee 50%,#ec4899 100%);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ===== Background ===== */
+.bg-gradient{
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(ellipse at 20% 0%,rgba(124,58,237,.18),transparent 50%),
+    radial-gradient(ellipse at 80% 30%,rgba(34,211,238,.15),transparent 50%),
+    radial-gradient(ellipse at 50% 100%,rgba(236,72,153,.12),transparent 50%),
+    var(--bg);
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:-1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,black 40%,transparent 80%);
+}
+.blob{
+  position:fixed;border-radius:50%;filter:blur(100px);z-index:-1;
+  opacity:.5;animation:float 20s ease-in-out infinite;
+}
+.blob-1{width:500px;height:500px;background:#7c3aed;top:-150px;left:-100px}
+.blob-2{width:400px;height:400px;background:#22d3ee;top:40%;right:-100px;animation-delay:-7s}
+.blob-3{width:350px;height:350px;background:#ec4899;bottom:-100px;left:30%;animation-delay:-14s}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(50px,-30px) scale(1.1)}
+  66%{transform:translate(-30px,40px) scale(.95)}
+}
+
+/* ===== Nav ===== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(6,6,10,.6);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s;
+}
+.nav.scrolled{border-bottom-color:var(--border)}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 24px;max-width:1200px;margin:0 auto;
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.logo-mark{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--gradient);
+  display:grid;place-items:center;
+  box-shadow:0 0 30px rgba(124,58,237,.5);
+}
+.logo-mark::after{content:"";width:10px;height:10px;border-radius:3px;background:var(--bg)}
+.nav-links{display:flex;gap:32px;font-size:14px;color:var(--muted)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{display:flex;gap:12px;align-items:center}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* ===== Buttons ===== */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;border-radius:12px;font-weight:600;font-size:14px;
+  border:none;cursor:pointer;transition:all .25s;
+  font-family:inherit;
+}
+.btn-primary{
+  background:var(--gradient);
+  color:#fff;
+  box-shadow:0 10px 30px -10px rgba(124,58,237,.6);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 15px 40px -10px rgba(124,58,237,.8)}
+.btn-ghost{
+  background:var(--surface);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+.btn-lg{padding:15px 28px;font-size:15px;border-radius:14px}
+
+/* ===== Hero ===== */
+.hero{
+  padding:180px 0 120px;
+  text-align:center;
+  position:relative;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:13px;color:var(--muted);
+  margin-bottom:28px;
+}
+.badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#22d3ee;box-shadow:0 0 10px #22d3ee;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{50%{opacity:.4}}
+h1{
+  font-size:clamp(40px,7vw,84px);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1.05;
+  margin-bottom:24px;
+}
+h1 .gradient-text{
+  background:var(--gradient);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero-subtitle{
+  font-size:clamp(16px,2vw,20px);
+  color:var(--muted);
+  max-width:620px;margin:0 auto 40px;
+}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
+
+/* Hero visual */
+.hero-visual{
+  max-width:900px;margin:0 auto;
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(34,211,238,.1));
+  border:1px solid var(--border);
+  padding:2px;position:relative;
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.6),0 0 100px -20px rgba(124,58,237,.3);
+}
+.hero-visual::before{
+  content:"";position:absolute;inset:-1px;border-radius:20px;
+  background:var(--gradient);opacity:.3;z-index:-1;filter:blur(20px);
+}
+.terminal{
+  background:rgba(6,6,10,.9);
+  border-radius:18px;
+  overflow:hidden;
+  text-align:left;
+}
+.terminal-header{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.terminal-dot{width:12px;height:12px;border-radius:50%}
+.terminal-dot.r{background:#ff5f57}
+.terminal-dot.y{background:#febc2e}
+.terminal-dot.g{background:#28c840}
+.terminal-title{
+  margin-left:auto;margin-right:auto;
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);
+}
+.terminal-body{
+  padding:28px;font-family:'JetBrains Mono',monospace;font-size:14px;
+  min-height:240px;
+}
+.term-line{margin-bottom:10px}
+.term-prompt{color:#22d3ee}
+.term-comment{color:#6b7280}
+.term-keyword{color:#ec4899}
+.term-string{color:#a78bfa}
+.term-success{color:#22c55e}
+.cursor{display:inline-block;width:8px;height:16px;background:#22d3ee;vertical-align:middle;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ===== Sections ===== */
+section{padding:100px 0;position:relative}
+.section-label{
+  display:inline-block;font-size:13px;font-weight:600;
+  color:var(--accent-2);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:16px;
+}
+h2{
+  font-size:clamp(32px,5vw,56px);
+  font-weight:800;letter-spacing:-.02em;line-height:1.1;
+  margin-bottom:20px;
+}
+.section-desc{color:var(--muted);font-size:17px;max-width:620px;margin-bottom:60px}
+.section-head{text-align:center;margin-bottom:60px}
+.section-head .section-desc{margin-left:auto;margin-right:auto}
+
+/* ===== Features ===== */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;
+}
+.feature{
+  padding:32px;border-radius:18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  transition:all .3s;
+  position:relative;overflow:hidden;
+}
+.feature::before{
+  content:"";position:absolute;inset:0;border-radius:18px;
+  background:linear-gradient(135deg,rgba(124,58,237,.08),transparent 50%);
+  opacity:0;transition:opacity .3s;
+}
+.feature:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.15)}
+.feature:hover::before{opacity:1}
+.feature-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(34,211,238,.1));
+  border:1px solid rgba(124,58,237,.3);
+  display:grid;place-items:center;margin-bottom:20px;
+  color:#a78bfa;
+}
+.feature h3{font-size:19px;font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
+.feature p{color:var(--muted);font-size:15px}
+
+/* ===== Stats ===== */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:20px;
+  padding:48px;border-radius:24px;
+  background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(34,211,238,.04));
+  border:1px solid var(--border);
+}
+.stat{text-align:center}
+.stat-value{
+  font-size:clamp(36px,5vw,52px);font-weight:800;letter-spacing:-.03em;
+  background:var(--gradient);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;margin-bottom:8px;
+}
+.stat-label{color:var(--muted);font-size:14px}
+
+/* ===== Pricing ===== */
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;max-width:1000px;margin:0 auto;
+}
+.plan{
+  padding:36px 32px;border-radius:20px;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transition:transform .3s;
+}
+.plan:hover{transform:translateY(-4px)}
+.plan.featured{
+  background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(34,211,238,.05));
+  border-color:rgba(124,58,237,.3);
+  position:relative;
+  box-shadow:0 30px 60px -20px rgba(124,58,237,.3);
+}
+.plan.featured::before{
+  content:"Popular";
+  position:absolute;top:-12px;right:24px;
+  padding:5px 12px;border-radius:999px;
+  background:var(--gradient);
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+}
+.plan-name{font-size:14px;color:var(--muted);margin-bottom:10px;font-weight:500}
+.plan-price{font-size:44px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px}
+.plan-price span{font-size:16px;color:var(--muted);font-weight:500}
+.plan-desc{color:var(--muted);font-size:14px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.plan-features{list-style:none;margin-bottom:28px;flex:1}
+.plan-features li{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;font-size:14px;color:#d4d4e0;
+}
+.plan-features svg{color:#22d3ee;flex-shrink:0}
+
+/* ===== CTA ===== */
+.cta-section{
+  text-align:center;
+  padding:80px 48px;border-radius:28px;
+  background:
+    radial-gradient(ellipse at top,rgba(124,58,237,.2),transparent 60%),
+    linear-gradient(135deg,rgba(124,58,237,.1),rgba(236,72,153,.08));
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse at center,black 20%,transparent 70%);
+}
+.cta-section>*{position:relative}
+
+/* ===== Footer ===== */
+footer{
+  padding:60px 0 40px;
+  border-top:1px solid var(--border);
+  color:var(--muted);font-size:14px;
+}
+.footer-inner{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;
+}
+.footer-links{display:flex;gap:24px}
+.footer-links a:hover{color:var(--text)}
+
+/* ===== Scroll animations ===== */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:640px){
+  .hero{padding:140px 0 80px}
+  section{padding:70px 0}
+  .stats,.cta-section{padding:32px 20px}
+  .terminal-body{padding:20px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-grid"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark"></div>
+      Aurora
+    </a>
+    <div class="nav-links">
+      <a href="#features">Возможности</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#">Документация</a>
+      <a href="#">Блог</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-ghost">Войти</a>
+      <a href="#cta" class="btn btn-primary">Начать</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="badge reveal">
+      <span class="badge-dot"></span>
+      Релиз v2.0 · AI-агенты нового поколения
+    </div>
+    <h1 class="reveal">
+      Автоматизируй работу<br>
+      с <span class="gradient-text">магией AI</span>
+    </h1>
+    <p class="hero-subtitle reveal">
+      Aurora подключает ваши данные к мощным языковым моделям и превращает
+      рутинные задачи в умные пайплайны — без единой строчки кода.
+    </p>
+    <div class="hero-ctas reveal">
+      <a href="#cta" class="btn btn-primary btn-lg">
+        Попробовать бесплатно
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#features" class="btn btn-ghost btn-lg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        Смотреть демо
+      </a>
+    </div>
+
+    <div class="hero-visual reveal">
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">aurora — ai pipeline</span>
+        </div>
+        <div class="terminal-body" id="terminal"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-label">Возможности</span>
+      <h2>Всё, что нужно для AI-автоматизации</h2>
+      <p class="section-desc">От простых триггеров до сложных мульти-агентных систем — в одной платформе.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature reveal">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Мгновенные ответы</h3>
+        <p>Стриминг-ответы с задержкой до 50мс. Ваши пользователи не будут ждать.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>Визуальный редактор</h3>
+        <p>Собирайте сложные пайплайны drag-and-drop. Тестируйте узлы по одному.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1l3 6 6 .9-4.5 4.4 1 6.2L12 15.8 6.5 18.5l1-6.2L3 7.9 9 7z"/></svg>
+        </div>
+        <h3>50+ моделей</h3>
+        <p>GPT, Claude, Gemini, Llama и open-source модели — единый API для всех.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Безопасность enterprise</h3>
+        <p>SOC 2 Type II, шифрование end-to-end, приватные эндпоинты, аудит-логи.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM12 7v5l3 3"/></svg>
+        </div>
+        <h3>Realtime observability</h3>
+        <p>Видите каждый запрос, токен и доллар в реальном времени. Алерты по порогам.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        </div>
+        <h3>RAG из коробки</h3>
+        <p>Загрузите документы — получите умный поиск и ответы со ссылками на источники.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+  <div class="container">
+    <div class="stats reveal">
+      <div class="stat">
+        <div class="stat-value" data-count="12000">0</div>
+        <div class="stat-label">команд используют</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-count="99.99" data-suffix="%">0%</div>
+        <div class="stat-label">uptime SLA</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-count="50" data-suffix="+">0+</div>
+        <div class="stat-label">интеграций</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-count="4.9" data-suffix="/5">0/5</div>
+        <div class="stat-label">рейтинг G2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-label">Тарифы</span>
+      <h2>Простые цены без сюрпризов</h2>
+      <p class="section-desc">Начните бесплатно, платите только за то, что реально используете.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="plan reveal">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$0<span>/мес</span></div>
+        <div class="plan-desc">Для знакомства с платформой</div>
+        <ul class="plan-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>До 1 000 запросов/мес</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>3 пайплайна</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Базовые модели</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Community-поддержка</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Начать</a>
+      </div>
+      <div class="plan featured reveal">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$29<span>/мес</span></div>
+        <div class="plan-desc">Для растущих продуктов</div>
+        <ul class="plan-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>100 000 запросов/мес</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Безлимит пайплайнов</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Все модели включая GPT-4, Claude</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Приоритетная поддержка</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>API-доступ</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Выбрать Pro</a>
+      </div>
+      <div class="plan reveal">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price">Custom</div>
+        <div class="plan-desc">Для крупных команд и корпораций</div>
+        <ul class="plan-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Безлимитные запросы</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Выделенная инфраструктура</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SSO, SAML, аудит</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Персональный менеджер</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SLA 99.99%</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Связаться</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-section reveal">
+      <h2>Готовы ускорить свою команду?</h2>
+      <p class="section-desc" style="margin:16px auto 32px">
+        14 дней бесплатно. Без карты. Без обязательств.
+      </p>
+      <div class="hero-ctas" style="margin-bottom:0">
+        <a href="#" class="btn btn-primary btn-lg">
+          Начать бесплатно
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#" class="btn btn-ghost btn-lg">Запросить демо</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="logo">
+        <div class="logo-mark"></div>
+        Aurora
+      </div>
+      <div class="footer-links">
+        <a href="#">Условия</a>
+        <a href="#">Конфиденциальность</a>
+        <a href="#">Контакты</a>
+        <a href="#">Twitter</a>
+        <a href="#">GitHub</a>
+      </div>
+      <div>© 2026 Aurora Labs</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav on scroll
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20));
+
+// Reveal on scroll
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>e.isIntersecting&&e.target.classList.add('visible'));
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// Counter animation
+const counters=document.querySelectorAll('[data-count]');
+const ioc=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target,target=parseFloat(el.dataset.count),suffix=el.dataset.suffix||'';
+    const isInt=Number.isInteger(target);
+    let cur=0,step=target/60;
+    const t=setInterval(()=>{
+      cur+=step;
+      if(cur>=target){cur=target;clearInterval(t)}
+      el.textContent=(isInt?Math.floor(cur).toLocaleString('ru-RU'):cur.toFixed(1))+suffix;
+    },20);
+    ioc.unobserve(el);
+  });
+},{threshold:.5});
+counters.forEach(c=>ioc.observe(c));
+
+// Terminal typewriter
+const lines=[
+  {t:'# Создаём AI-агента для поддержки',c:'term-comment'},
+  {t:'<span class="term-prompt">$</span> aurora create agent support-bot',c:''},
+  {t:'<span class="term-success">✓</span> Агент создан · id: ag_8f2c',c:''},
+  {t:'<span class="term-prompt">$</span> aurora pipeline add \\',c:''},
+  {t:'    --model <span class="term-string">"claude-4"</span> \\',c:''},
+  {t:'    --tools <span class="term-keyword">search</span>,<span class="term-keyword">crm</span>,<span class="term-keyword">email</span>',c:''},
+  {t:'<span class="term-success">✓</span> Пайплайн собран за 1.2s',c:''},
+  {t:'<span class="term-prompt">$</span> aurora deploy --region eu',c:''},
+  {t:'<span class="term-success">✓</span> Live: <span class="term-string">https://api.aurora.ai/ag_8f2c</span>',c:''},
+];
+const term=document.getElementById('terminal');
+let li=0,ci=0,curLine=null;
+function type(){
+  if(li>=lines.length){
+    const c=document.createElement('span');c.className='cursor';term.appendChild(c);return;
+  }
+  if(ci===0){
+    curLine=document.createElement('div');
+    curLine.className='term-line '+lines[li].c;
+    term.appendChild(curLine);
+  }
+  const raw=lines[li].t;
+  if(ci<raw.length){
+    curLine.innerHTML=raw.substring(0,ci+1);
+    ci++;
+    setTimeout(type,raw[ci-1]==='<'?0:18);
+  }else{
+    curLine.innerHTML=raw;
+    li++;ci=0;
+    setTimeout(type,350);
+  }
+}
+// Start typing when hero visual is visible
+const ioh=new IntersectionObserver(es=>{
+  if(es[0].isIntersecting){setTimeout(type,400);ioh.disconnect();}
+},{threshold:.3});
+ioh.observe(document.querySelector('.hero-visual'));
+</script>
+</body>
+</html>
