@@ -326,6 +326,45 @@ footer{
 .footer-links{display:flex;gap:24px}
 .footer-links a:hover{color:var(--text)}
 
+/* ===== Services ===== */
+.services-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;min-height:200px;
+}
+.service-card{
+  padding:32px;border-radius:18px;
+  background:var(--surface);border:1px solid var(--border);
+  transition:all .3s;display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.service-card::before{
+  content:"";position:absolute;inset:0;border-radius:18px;
+  background:linear-gradient(135deg,rgba(124,58,237,.1),transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.service-card:hover{transform:translateY(-4px);border-color:rgba(124,58,237,.4)}
+.service-card:hover::before{opacity:1}
+.service-card>*{position:relative}
+.service-icon{font-size:40px;margin-bottom:18px;line-height:1}
+.service-card h3{font-size:20px;font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
+.service-card p{color:var(--muted);font-size:15px;margin-bottom:22px;flex:1}
+.service-price{
+  display:inline-block;align-self:flex-start;
+  padding:7px 16px;border-radius:999px;
+  background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(34,211,238,.1));
+  border:1px solid rgba(124,58,237,.3);
+  font-weight:600;font-size:14px;
+}
+.services-state{
+  grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);
+}
+.services-state .spinner{
+  width:32px;height:32px;border:3px solid var(--border);
+  border-top-color:var(--accent-2);border-radius:50%;
+  animation:spin 1s linear infinite;margin:0 auto 16px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* ===== Scroll animations ===== */
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
 .reveal.visible{opacity:1;transform:translateY(0)}
@@ -354,6 +393,7 @@ footer{
     </a>
     <div class="nav-links">
       <a href="#features">Возможности</a>
+      <a href="#services">Услуги</a>
       <a href="#pricing">Тарифы</a>
       <a href="#">Документация</a>
       <a href="#">Блог</a>
@@ -455,6 +495,23 @@ footer{
         </div>
         <h3>RAG из коробки</h3>
         <p>Загрузите документы — получите умный поиск и ответы со ссылками на источники.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-label">Услуги</span>
+      <h2>Что я делаю</h2>
+      <p class="section-desc">Три направления, в которых помогаю клиентам.</p>
+    </div>
+    <div class="services-grid" id="services-grid">
+      <div class="services-state">
+        <div class="spinner"></div>
+        Загружаем услуги…
       </div>
     </div>
   </div>
@@ -641,6 +698,32 @@ const ioh=new IntersectionObserver(es=>{
   if(es[0].isIntersecting){setTimeout(type,400);ioh.disconnect();}
 },{threshold:.3});
 ioh.observe(document.querySelector('.hero-visual'));
+
+// Supabase services fetch
+const SUPABASE_URL='https://eaffqommiwrbsjyzdfpz.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhZmZxb21taXdyYnNqeXpkZnB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0OTMwNDUsImV4cCI6MjA5MjA2OTA0NX0.KFKtbitGr7t-1Z1qgMzImgJ6RCb8cXsVLXQbyPKph4E';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function loadServices(){
+  const grid=document.getElementById('services-grid');
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/services?select=*&order=id.asc`,{
+      headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
+    });
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    if(!data.length){grid.innerHTML='<div class="services-state">Пока нет услуг</div>';return;}
+    grid.innerHTML=data.map(s=>`
+      <div class="service-card">
+        <div class="service-icon">${esc(s.icon||'✨')}</div>
+        <h3>${esc(s.title)}</h3>
+        <p>${esc(s.description)}</p>
+        <div class="service-price">${esc(s.price)}</div>
+      </div>`).join('');
+  }catch(e){
+    grid.innerHTML=`<div class="services-state">Не удалось загрузить услуги. ${esc(e.message)}</div>`;
+  }
+}
+loadServices();
 </script>
 </body>
 </html>
